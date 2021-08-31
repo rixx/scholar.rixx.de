@@ -38,6 +38,11 @@ class Topic(BaseModel):
     def sources(self):
         return Source.objects.filter(cards__topic=self)
 
+    @cached_property
+    def first_card(self):
+        # TODO use annotation if present
+        return self.cards.all().first()
+
 
 class Card(OrderedModel, BaseModel):
     """Cards don't have to have a topic: they can just belong to one source,
