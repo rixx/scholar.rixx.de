@@ -1,0 +1,8 @@
+django==3.2.*
+django-rest-framework==3.12.*
+
+black
+djhtml
+docformatter
+flake8
+isort
