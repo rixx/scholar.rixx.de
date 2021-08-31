@@ -1,5 +1,6 @@
 django==3.2.*
 django-rest-framework==3.12.*
+django-cors-headers==3.8.*
 
 black
 djhtml
