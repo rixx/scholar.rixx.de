@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "ordered_model",
     "scholar.core",
+    "scholar.api",
 ]
 
 MIDDLEWARE = [
