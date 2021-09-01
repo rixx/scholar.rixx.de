@@ -1,5 +1,6 @@
 from django.urls import include, path
 from rest_framework import routers
+from rest_framework.authtoken.views import obtain_auth_token
 
 from scholar.api import views
 
@@ -9,4 +10,7 @@ router.register(r"t", views.TopicViewSet)
 router.register(r"source", views.SourceViewSet)
 router.register(r"tag", views.TagViewSet)
 
-urlpatterns = [path("api/", include(router.urls))]
+urlpatterns = [
+    path("api/login/", obtain_auth_token),
+    path("api/", include(router.urls)),
+]
