@@ -2,24 +2,37 @@ import { reactive } from 'vue'
 
 const store = {
   debug: true,
-  user: reactive({email: null, token: null}),
+  user: reactive({name: null, token: null}),
   history: reactive([]),
 
-  setUser(user) {
-    if (this.debug) console.log('[store] setUser triggered with', user)
-    this.store.user = user
+  setUser(name, token) {
+    if (this.debug) console.log('[store] setUser triggered with', name, token)
+    this.user.name = name
+    this.user.token = token
+    window.localStorage.setItem("scholarApiUser", name)
+    window.localStorage.setItem("scholarApiToken", token)
   },
   clearUser() {
     if (this.debug) console.log('[store] credentials cleared')
-    this.store.user = {email: null, token: null}
+    this.user = {email: null, token: null}
+    window.localStorage.removeItem("scholarApiToken")
+  },
+  getUser() {
+    if (this.user.name || this.user.token) {
+      return this.user
+    }
+    this.user.name = window.localStorage.getItem("scholarApiUser")
+    this.user.token = window.localStorage.getItem("scholarApiToken")
+    return this.user
   },
   setHistory(history) {
     if (this.debug) console.log('[store] setHistory triggered with', history)
-    this.store.history = history
+    this.history = history
   },
   addHistory(page) {
     if (this.debug) console.log('[store] addHistory triggered with', page)
-    this.store.history.push(page)
+    this.history.push(page)
+    if (this.debug) console.log('[store] history is now', this.history)
   },
 }
 export default store
