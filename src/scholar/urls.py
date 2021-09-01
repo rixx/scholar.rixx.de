@@ -12,5 +12,6 @@ router.register(r"tag", views.TagViewSet)
 
 urlpatterns = [
     path("api/login/", obtain_auth_token),
+    path("api/search/", views.search),
     path("api/", include(router.urls)),
 ]

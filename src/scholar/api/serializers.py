@@ -20,7 +20,7 @@ class FirstCardSerializer(serializers.ModelSerializer):
 
 
 class FlatTopicSerializer(serializers.ModelSerializer):
-    """Used in card view and nested card view within source view"""
+    """Used in card view and nested card view within source view, plus in the search."""
 
     class Meta:
         model = Topic
@@ -53,6 +53,14 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ("id", "name", "topics")
+
+
+class FlatTagSerializer(serializers.ModelSerializer):
+    """Used in the search."""
+
+    class Meta:
+        model = Tag
+        fields = ("id", "name")
 
 
 class SourceCardSerializer(FirstCardSerializer):
