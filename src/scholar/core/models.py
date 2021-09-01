@@ -32,10 +32,9 @@ class Topic(BaseModel):
     related ones.
     """
 
-    title = models.CharField(max_length=100)
-    slug = models.CharField(max_length=100, unique=True, db_index=True)
+    title = models.CharField(max_length=100, unique=True)
 
-    info_box = models.JSONField()
+    info_box = models.JSONField(null=True)
     language = models.CharField(
         choices=(("de", "German"), ("en", "English")), default="en", max_length=2
     )
@@ -111,4 +110,3 @@ class CardTopicThrough(OrderedModel):
 
 class Tag(BaseModel):
     name = models.CharField(max_length=50)
-    slug = models.CharField(max_length=50, unique=True, db_index=True)

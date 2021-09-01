@@ -24,7 +24,7 @@ class FlatTopicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Topic
-        fields = ("id", "title", "slug", "info_box", "language", "translation")
+        fields = ("id", "title", "info_box", "language", "translation")
 
 
 class TopicFirstCardSerializer(serializers.ModelSerializer):
@@ -40,7 +40,6 @@ class TopicFirstCardSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "title",
-            "slug",
             "info_box",
             "language",
             "translation",
@@ -53,7 +52,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ("id", "name", "slug", "topics")
+        fields = ("id", "name", "topics")
 
 
 class SourceCardSerializer(FirstCardSerializer):
@@ -97,16 +96,18 @@ class CardSerializer(serializers.ModelSerializer):
 
 
 class TopicSerializer(serializers.ModelSerializer):
-    cards = CardSerializer(many=True)  # Duplicates topic info, we don't care for now
+    cards = CardSerializer(
+        many=True, required=False
+    )  # Duplicates topic info, we don't care for now
 
     class Meta:
         model = Topic
         fields = (
             "id",
             "title",
-            "slug",
             "info_box",
             "language",
             "translation",
             "first_card",
+            "cards",
         )

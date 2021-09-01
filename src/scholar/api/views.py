@@ -40,4 +40,5 @@ class CardViewSet(BaseViewSet):
 class TopicViewSet(BaseViewSet):
     serializer_class = TopicSerializer
     queryset = Topic.objects.all()
+    lookup_field = "title"
     # TODO filter by search
