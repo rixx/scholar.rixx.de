@@ -96,9 +96,7 @@ class CardSerializer(serializers.ModelSerializer):
         )
 
 
-class TopicFirstCardSerializer(serializers.ModelSerializer):
-    """Used in card view and nested card view within source view"""
-
+class TopicSerializer(serializers.ModelSerializer):
     cards = CardSerializer(many=True)  # Duplicates topic info, we don't care for now
 
     class Meta:

@@ -1,4 +1,4 @@
-from rest_framework import serializers, permissions
+from rest_framework import permissions, viewsets
 
 from scholar.core.models import Card, Source, Tag, Topic
 
@@ -15,7 +15,7 @@ class ReadOnly(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS
 
 
-class BaseViewSet(serializers.ModelViewSet):
+class BaseViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser | ReadOnly]
 
 
