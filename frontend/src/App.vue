@@ -12,7 +12,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'App',
   components: {
@@ -54,9 +53,9 @@ main p {
 }
 main .card {
   margin: 40px 0;
-  padding: 16px 24px;
-  border-top-right-radius: 20px;
-  border-bottom-left-radius: 20px;
+  padding: 16px 28px;
+  border-top-right-radius: 44px;
+  border-bottom-left-radius: 44px;
   box-shadow: 0px 0px 20px 4px rgba(0,0,0,0.10);
 }
 main .card:hover {

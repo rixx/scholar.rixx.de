@@ -14,5 +14,28 @@
       Read on to find out why I made this thing and how it works. At a guess,
       at least some of its moving parts would work for you, too.
     </p>
+    <card text="foo"></card>
 
 </template>
+<script>
+import Card from '@/components/Card'
+export default {
+  name: 'start',
+  components: { Card },
+  data () {
+    return { }
+  },
+  computed: {
+    something () {
+      return []
+    },
+  },
+  created () { },
+  mounted () { },
+  methods: {
+  }
+}
+</script>
+
+<style>
+</style>
