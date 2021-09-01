@@ -42,7 +42,6 @@ export default {
     },
     doLogin () {
       api.fetch('/api/login/', 'POST', {username: this.loginUser, password: this.loginPassword}).then(response => {
-        console.log(response)
         if (response.token) {
           store.setUser(this.loginUser, response.token)
         }

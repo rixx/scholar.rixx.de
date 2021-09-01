@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 const store = {
-  debug: true,
+  debug: process.env.NODE_ENV !== "production",
   user: reactive({name: null, token: null}),
   history: reactive([]),
 
@@ -31,6 +31,7 @@ const store = {
   },
   addHistory(page) {
     if (this.debug) console.log('[store] addHistory triggered with', page)
+    this.history = this.history.filter(e => e != page)
     this.history.push(page)
     if (this.debug) console.log('[store] history is now', this.history)
   },
