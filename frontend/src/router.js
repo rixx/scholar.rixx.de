@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 import Start from "@/views/Start.vue";
 import Topic from "@/views/Topic.vue";
+import Source from "@/views/Source.vue";
 
 const routes = [
   {
@@ -12,6 +13,11 @@ const routes = [
     path: "/t/:topicName",
     name: "Topic",
     component: Topic,
+  },
+  {
+    path: "/source/:sourceId",
+    name: "Source",
+    component: Source,
   },
 ];
 const router = createRouter({
