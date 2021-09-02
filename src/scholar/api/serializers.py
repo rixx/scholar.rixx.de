@@ -33,7 +33,7 @@ class TopicFirstCardSerializer(serializers.ModelSerializer):
     first_card = serializers.SerializerMethodField()
 
     def get_first_card(self):
-        return FirstCardSerializer(self.first_card)
+        return FirstCardSerializer(self.first_card).data
 
     class Meta:
         model = Topic
@@ -86,9 +86,9 @@ class FlatSourceSerializer(serializers.ModelSerializer):
 
 
 class CardSerializer(serializers.ModelSerializer):
-    topic = FlatTopicSerializer(read_only=False)
-    sources = FlatSourceSerializer(read_only=False, many=True)
-    references = FlatTopicSerializer(read_only=True, many=True)
+    topic = FlatTopicSerializer(read_only=False, required=False)
+    sources = FlatSourceSerializer(read_only=False, many=True, required=False)
+    references = FlatTopicSerializer(read_only=True, many=True, required=False)
 
     class Meta:
         model = Card
@@ -100,6 +100,38 @@ class CardSerializer(serializers.ModelSerializer):
             "prediction_result",
             "sources",
             "references",
+        )
+
+
+class CardWriteSerializer(serializers.ModelSerializer):
+    topic = serializers.PrimaryKeyRelatedField(read_only=False, queryset=Topic.objects.all(), required=False)
+    sources = serializers.PrimaryKeyRelatedField(read_only=False, many=True, queryset=Source.objects.all(), required=False)
+
+    def update(self, instance, validated_data):
+        sources = validated_data.pop("sources", [])
+        # old_instance = Card.objects.get(pk=instance.pk)  # TODO we will need this later on
+        instance = super().update(instance, validated_data)
+        instance.sources.set(sources)
+        instance.update_references()
+        return instance
+
+    def create(self, validated_data):
+        sources = validated_data.pop("sources", None)
+        instance = Card.objects.create(**validated_data)
+        if sources:
+            instance.sources.set(sources)
+        instance.update_references()
+        return instance
+
+    class Meta:
+        model = Card
+        fields = (
+            "id",
+            "text",
+            "topic",
+            "prediction_deadline",
+            "prediction_result",
+            "sources",
         )
 
 
@@ -116,6 +148,5 @@ class TopicSerializer(serializers.ModelSerializer):
             "info_box",
             "language",
             "translation",
-            "first_card",
             "cards",
         )

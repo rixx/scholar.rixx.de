@@ -1,3 +1,4 @@
+import re
 import uuid
 
 from django.conf import settings
@@ -7,6 +8,9 @@ from django.dispatch import receiver
 from django.utils.functional import cached_property
 from ordered_model.models import OrderedModel
 from rest_framework.authtoken.models import Token
+
+
+REFERENCE_REGEX = r'(?<=\[\[).*?(?=(?:\]\]|#|\|))'
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -61,8 +65,8 @@ class Card(OrderedModel, BaseModel):
     topic = models.ForeignKey(
         to=Topic, on_delete=models.CASCADE, related_name="cards", null=True
     )
-    sources = models.ManyToManyField("Source", through="CardSourceThrough")
-    references = models.ManyToManyField(Topic, through="CardTopicThrough")
+    sources = models.ManyToManyField("Source", through="CardSourceThrough", related_name="cards")
+    references = models.ManyToManyField(Topic, through="CardTopicThrough", related_name="backrefs")
     prediction_deadline = models.DateTimeField(null=True, blank=True)
     prediction_result = models.BooleanField(null=True, blank=True)
 
@@ -71,8 +75,17 @@ class Card(OrderedModel, BaseModel):
     class Meta(OrderedModel.Meta):
         pass
 
-    def generate_references(self):
-        pass  # TODO
+    def update_references(self):
+        references_text = set(re.findall(REFERENCE_REGEX, self.text))
+        references_obj = []
+        for word in references_text:
+            word = word.split('|')[-1]
+            topic = Topic.objects.filter(title__iexact=word).first()
+            if not topic:
+                topic = Topic.objects.create(title=word)
+            references_obj.append(topic)
+        self.references.set(references_obj)
+        return references_obj
 
 
 class Source(BaseModel):

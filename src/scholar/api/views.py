@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.db import transaction
 from rest_framework import decorators, permissions, viewsets
 from rest_framework.response import Response
 
@@ -6,6 +7,7 @@ from scholar.core.models import Card, Source, Tag, Topic
 
 from .serializers import (
     CardSerializer,
+    CardWriteSerializer,
     FlatSourceSerializer,
     FlatTagSerializer,
     FlatTopicSerializer,
@@ -23,30 +25,37 @@ class ReadOnly(permissions.BasePermission):
 class BaseViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser | ReadOnly]
 
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return getattr(self, "write_serializer_class", self.serializer_class)
+        return self.serializer_class
+
 
 class TagViewSet(BaseViewSet):
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
-    # TODO filter by search
 
 
 class SourceViewSet(BaseViewSet):
     serializer_class = SourceSerializer
     queryset = Source.objects.all()
-    # TODO filter by search
 
 
 class CardViewSet(BaseViewSet):
     serializer_class = CardSerializer
+    write_serializer_class = CardWriteSerializer
     queryset = Card.objects.all()
-    # TODO filter by search
+
+    @transaction.atomic()
+    def create(self, *args, **kwargs):
+        result = super().create(*args, **kwargs)
+        return result
 
 
 class TopicViewSet(BaseViewSet):
     serializer_class = TopicSerializer
     queryset = Topic.objects.all()
     lookup_field = "title"
-    # TODO filter by search
 
 
 @decorators.api_view()
