@@ -9,7 +9,8 @@
       loading, pls wait
     </div>
     <div v-else-if="topic">
-      TODO: render cards
+      <card v-bind:key="card.id" v-for="card in this.topic.cards" :card="card"></card>
+      <card :createCard="true"></card>
     </div>
 
     <div v-else-if="loggedIn">
@@ -43,9 +44,10 @@
 import api from '@/lib/api'
 import config from '@/config'
 import store from '@/store'
+import Card from '@/components/Card'
 export default {
   name: 'Topic',
-  components: { },
+  components: { Card },
   data () {
     return {
       topic: null,

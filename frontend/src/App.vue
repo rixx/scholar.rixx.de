@@ -240,17 +240,6 @@ main p {
   font-size: 18px;
   text-align: left;
 }
-.card {
-  margin: 40px 0;
-  padding: 16px 28px;
-  border-top-right-radius: 44px;
-  border-bottom-left-radius: 44px;
-  box-shadow: 0px 0px 20px 4px rgba(0,0,0,0.10);
-  background: white;
-}
-.card:hover {
-  box-shadow: 0px 0px 20px 7px rgba(0,0,0,0.12);
-}
 #overlay {
   z-index: 1000;
   position: absolute;
