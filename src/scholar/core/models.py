@@ -77,6 +77,8 @@ class Card(OrderedModel, BaseModel):
 
 class Source(BaseModel):
     title = models.CharField(max_length=100)
+    author = models.CharField(max_length=100, null=True)
+    notes = models.TextField(null=True)
     url = models.URLField(max_length=200, null=True)
     trust = models.IntegerField(
         choices=(

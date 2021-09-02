@@ -76,13 +76,13 @@ class SourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Source
-        fields = ("id", "title", "url", "trust", "cards")
+        fields = ("id", "title", "url", "trust", "cards", "author", "notes")
 
 
 class FlatSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source
-        fields = ("id", "title", "url", "trust", "cards")
+        fields = ("id", "title", "url", "trust", "cards", "author", "notes")
 
 
 class CardSerializer(serializers.ModelSerializer):

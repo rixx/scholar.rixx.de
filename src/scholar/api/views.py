@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import decorators, permissions, viewsets
 from rest_framework.response import Response
 
@@ -66,7 +67,11 @@ def search(request):
         ),
         (
             "source",
-            Source.objects.filter(title__icontains=search_term),
+            Source.objects.filter(
+                Q(title__icontains=search_term)
+                | Q(url__icontains=search_term)
+                | Q(author__icontains=search_term)
+            ),
             FlatSourceSerializer,
         ),
         ("tag", Tag.objects.filter(name__icontains=search_term), FlatTagSerializer),
