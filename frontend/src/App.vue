@@ -5,19 +5,19 @@
       <input v-if="searching" v-model="searchTerm" @keydown.esc="toggleSearch()" @input="updateSearch()">
       <div v-if="searching && searchResults.length" id="search-results">
         <template v-for="result in searchResults" v-bind:key="result.id">
-          <a v-if="result.type === 'topic'" :href="'/t/' + result.title">
+          <router-link v-if="result.type === 'topic'" :to="{ name: 'Topic', params: { topicName: result.title } }" @click="searching = false">
             <strong>Topic: </strong> {{ result.title }}
-          </a>
-          <a v-else-if="result.type === 'source'" :href="'/source/' + result.id">
+          </router-link>
+          <router-link v-else-if="result.type === 'source'" :to="{ name: 'Source', params: { sourceId: result.id } }" @click="searching = false">
             <strong>Source: </strong> {{ result.title }}
-          </a>
-          <a v-else-if="result.type === 'tag'" :href="'/tag/' + result.name">
+          </router-link>
+          <router-link v-else-if="result.type === 'tag'" :to="{ name: 'Tag', params: { tagName: result.name } }" @click="searching = false">
             <strong>Tag: </strong> {{ result.name }}
-          </a>
+          </router-link>
         </template>
       </div>
     </div>
-    <div id="add-container" class="header-container" :class="{active: addMenu}">
+    <div id="add-container" class="header-container" :class="{active: addMenu}" v-if="user.token">
       <img src="./assets/add.svg" @click="toggleAddMenu()">
       <div id="add-menu" v-if="addMenu">
         <div @click="adding = 'topic'">
@@ -35,7 +35,10 @@
   </header>
 
   <main>
-    <router-view @startLogin="startLogin" :loggedIn="loggedIn" />
+    <router-view @startLogin="startLogin" :loggedIn="loggedIn" v-slot="{ Component, route }">
+      <component :is="Component" :key="route.path" />
+    </router-view>
+
     <div v-if="loggingIn || adding " id="overlay" @click="stopOverlay()" @keydown.esc="stopOverlay()">
       <div class="card" @click.stop="" @keydown.esc="stopOverlay()" v-if="loggingIn">
         <h2>Log in</h2>
