@@ -10,7 +10,7 @@
     </div>
     <div v-else-if="topic">
       <card v-bind:key="card.id" v-for="card in this.topic.cards" :card="card"></card>
-      <card :createCard="true"></card>
+      <card :createCard="true" :parentTopic="topic" @cardCreate="refreshContent"></card>
     </div>
 
     <div v-else-if="loggedIn">
@@ -69,15 +69,7 @@ export default {
   },
   created () {
     store.addHistory(this.$route.params.topicName)
-    api.fetch(`/api/topic/${this.$route.params.topicName}`, 'GET').then(response => {
-      if (response.id) {
-        this.topic = response
-      }
-      this.loading = false
-    }).catch(() => {
-      this.topic = null
-      this.loading = false
-    })
+    this.refreshContent()
   },
   mounted () {
   },
@@ -91,6 +83,17 @@ export default {
         }
       })
     },
+    refreshContent () {
+      api.fetch(`/api/topic/${this.$route.params.topicName}`, 'GET').then(response => {
+        if (response.id) {
+          this.topic = response
+        }
+        this.loading = false
+      }).catch(() => {
+        this.topic = null
+        this.loading = false
+      })
+    }
   }
 }
 </script>

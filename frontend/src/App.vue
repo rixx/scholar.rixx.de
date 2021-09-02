@@ -284,7 +284,8 @@ main p {
   padding: 32px 64px;
   text-align: center;
 }
-input, input:focus, select {
+input, input:focus, select, textarea {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   font-size: 18px;
   padding: 8px;
   border: 1px solid #ccc;

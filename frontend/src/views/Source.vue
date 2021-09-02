@@ -9,7 +9,8 @@
       loading, pls wait
     </div>
     <div v-else-if="source">
-      TODO: render cards
+      <card v-bind:key="card.id" v-for="card in this.source.cards" :card="card"></card>
+      <card :createCard="true" :parentSource="source" @cardCreate="refreshContent"></card>
     </div>
     <div v-else>
       <p>Source not found.</p>
@@ -22,9 +23,10 @@
 import api from '@/lib/api'
 import config from '@/config'
 import store from '@/store'
+import Card from '@/components/Card'
 export default {
   name: 'Source',
-  components: { },
+  components: { Card },
   data () {
     return {
       source: null,
@@ -44,20 +46,24 @@ export default {
     },
   },
   created () {
-    api.fetch(`/api/source/${this.$route.params.sourceId}`, 'GET').then(response => {
-      if (response.id) {
-        this.source = response
-        store.addHistory({route: this.$route, title: this.source.title})
-      }
-      this.loading = false
-    }).catch(() => {
-      this.source = null
-      this.loading = false
-    })
+    this.refreshContent()
   },
   mounted () {
   },
   methods: {
+    refreshContent () {
+      api.fetch(`/api/source/${this.$route.params.sourceId}`, 'GET').then(response => {
+        if (response.id) {
+          this.source = response
+          store.addHistory({route: this.$route, title: this.source.title})
+        }
+        this.loading = false
+      }).catch(() => {
+        this.source = null
+        this.loading = false
+      })
+
+    }
   }
 }
 </script>
