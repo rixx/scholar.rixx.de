@@ -1,6 +1,6 @@
 <template>
   <header>
-    <div id="search-container" :class="{active: searching}">
+    <div id="search-container" class="header-container" :class="{active: searching}">
       <img src="./assets/search.svg" @click="toggleSearch()">
       <input v-if="searching" v-model="searchTerm" @keydown.esc="toggleSearch()" @input="updateSearch()">
       <div v-if="searching && searchResults.length" id="search-results">
@@ -17,15 +17,27 @@
         </template>
       </div>
     </div>
-    <img src="./assets/add.svg">
+    <div id="add-container" class="header-container" :class="{active: addMenu}">
+      <img src="./assets/add.svg" @click="toggleAddMenu()">
+      <div id="add-menu" v-if="addMenu">
+        <div @click="adding = 'topic'">
+          <span class="letter">T</span>
+          <span class="word">New topic</span>
+        </div>
+        <div @click="adding = 'source'">
+          <span class="letter">S</span>
+          <span class="word">New source</span>
+        </div>
+      </div>
+    </div>
     <img src="./assets/cards.svg">
     <img v-if="!user.token" @click="startLogin()" src="./assets/login.svg">
   </header>
 
-  <main @keydown.esc="stopLogin()">
-  <router-view @startLogin="startLogin" :loggedIn="loggedIn" />
-    <div v-if="loggingIn" id="login-overlay" @click="stopLogin()" @keydown.esc="stopLogin()">
-      <div class="card" @click.stop="" @keydown.esc="stopLogin()">
+  <main>
+    <router-view @startLogin="startLogin" :loggedIn="loggedIn" />
+    <div v-if="loggingIn || adding " id="overlay" @click="stopOverlay()" @keydown.esc="stopOverlay()">
+      <div class="card" @click.stop="" @keydown.esc="stopOverlay()" v-if="loggingIn">
         <h2>Log in</h2>
         <input type="text" @keydown.enter="doLogin()" v-model="loginUser">
         <input type="password" @keydown.enter="doLogin()" v-model="loginPassword">
@@ -44,6 +56,8 @@ export default {
     return {
       loggingIn: false,
       searching: false,
+      adding: false,
+      addMenu: false,
       loginUser: "",
       loginPassword: "",
       searchResults: [],
@@ -56,8 +70,10 @@ export default {
     startLogin () {
       this.loggingIn = true
     },
-    stopLogin () {
+    stopOverlay () {
       this.loggingIn = false
+      this.adding = false
+      this.addMenu = false
     },
     doLogin () {
       api.fetch('/api/login/', 'POST', {username: this.loginUser, password: this.loginPassword}).then(response => {
@@ -66,10 +82,19 @@ export default {
         }
       })
     },
+    toggleAddMenu () {
+      if (this.addMenu) {
+        this.addMenu = false
+      } else {
+        this.stopOverlay()
+        this.addMenu = true
+      }
+    },
     toggleSearch () {
       if (this.searching) {
         this.searching = false
       } else {
+        this.stopOverlay()
         this.searching = true
         window.setTimeout(() => document.querySelector("#search-container input").focus(), 5)
       }
@@ -115,22 +140,23 @@ header > * {
   cursor: pointer;
 }
 header img {
-  width: 40px;
+  height: 42px;
 }
-header #search-container.active {
+header .header-container.active {
   position: relative;
   box-shadow: 0px 0px 20px 4px rgba(0,0,0,0.10);
   border-radius: 44px;
   padding: 4px;
   display: flex;
   width: 300px;
+  height: 40px;
 }
-header #search-container.active img {
+header .header-container.active img {
   width: 28px;
   margin-left: 12px;
   margin-right: 8px;
 }
-header #search-container.active input {
+header .header-container.active input {
   border-radius: 44px;
   margin: 0 4px;
   width: 100%;
@@ -154,6 +180,22 @@ header #search-container.active input {
 }
 #search-results > a:hover {
   background-color: #f4f4f4;
+}
+#add-menu {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+#add-menu > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#add-menu .letter {
+  font-size: 24px;
+}
+#add-menu .word {
+  font-size: 11px;
 }
 main {
   max-width: 800px;
@@ -179,7 +221,7 @@ main p {
 .card:hover {
   box-shadow: 0px 0px 20px 7px rgba(0,0,0,0.12);
 }
-#login-overlay {
+#overlay {
   z-index: 1000;
   position: absolute;
   width: 100%;
@@ -188,7 +230,7 @@ main p {
   left: 0;
   background-color: rgba(0,0,0,0.7);
 }
-#login-overlay .card {
+#overlay .card {
   width: 500px;
   margin-left: auto;
   margin-right: auto;
@@ -204,7 +246,7 @@ input, input:focus {
   border: 1px solid #ccc;
   outline: none;
 }
-#login-overlay input {
+#overlay input {
   width: 50%;
   margin: 15px auto;
 }
