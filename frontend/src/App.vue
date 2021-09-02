@@ -56,8 +56,18 @@
       </div>
       <div class="card" @click.stop="" @keydown.esc="stopOverlay()" v-else-if="adding == 'source'">
         <h2>New source</h2>
-        <input type="text" @keydown.enter="doCreateSource()" v-model="loginUser">
-        <input type="password" @keydown.enter="doCreateSource()" v-model="loginPassword">
+        <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceTitle" placeholder="Title">
+        <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceAuthor" placeholder="Author">
+        <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceNotes" placeholder="Notes">
+        <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceUrl" placeholder="URL">
+        <select v-model="newSourceTrust" @keydown.enter="doCreateSource()">
+          <option value="5">excellent source</option>
+          <option value="4">good source</option>
+          <option value="3">better than 50/50 (good pop sci)</option>
+          <option value="2">50/50 (pop sci)</option>
+          <option value="1">probably incorrect</option>
+          <option value="0">incorrect</option>
+        </select>
         <button @click="doCreateSource()">Create</button>
       </div>
     </div>
@@ -82,6 +92,11 @@ export default {
       searchTerm: "",
       newTopicLanguage: "",
       newTopicTitle: "",
+      newSourceTitle: "",
+      newSourceAuthor: "",
+      newSourceNotes: "",
+      newSourceTrust: "",
+      newSourceUrl: "",
     }
   },
   components: {
@@ -105,12 +120,22 @@ export default {
     doCreateTopic() {
       api.fetch('/api/topic/', 'POST', {title: this.newTopicTitle, language: this.newTopicLanguage}).then(response => {
         if (response.id) {
+          this.stopOverlay()
           this.$router.push({ name: 'Topic', params: { topicName: this.newTopicTitle } })
         } else {
           this.error = response
         }
       })
-
+    },
+    doCreateSource() {
+      api.fetch('/api/source/', 'POST', {title: this.newSourceTitle, author: this.newSourceAuthor, url: this.newSourceUrl, trust: this.newSourceTrust, notes: this.newSourceNotes}).then(response => {
+        if (response.id) {
+          this.stopOverlay()
+          this.$router.push({ name: 'Source', params: { sourceId: response.id } })
+        } else {
+          this.error = response
+        }
+      })
     },
     toggleAddMenu () {
       if (this.addMenu) {
@@ -253,7 +278,7 @@ main p {
   width: 500px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 40vh;
+  margin-top: 20vh;
   display: flex;
   flex-direction: column;
   padding: 32px 64px;
