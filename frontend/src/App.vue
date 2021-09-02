@@ -45,6 +45,21 @@
         <input type="text" @keydown.enter="doLogin()" v-model="loginUser">
         <input type="password" @keydown.enter="doLogin()" v-model="loginPassword">
       </div>
+      <div class="card" @click.stop="" @keydown.esc="stopOverlay()" v-else-if="adding == 'topic'">
+        <h2>New topic</h2>
+        <input type="text" @keydown.enter="doCreateTopic()" v-model="newTopicTitle">
+        <select v-model="newTopicLanguage" @keydown.enter="doCreateTopic()">
+          <option value="de">German</option>
+          <option value="en">English</option>
+        </select>
+        <button @click="doCreateTopic()">Create</button>
+      </div>
+      <div class="card" @click.stop="" @keydown.esc="stopOverlay()" v-else-if="adding == 'source'">
+        <h2>New source</h2>
+        <input type="text" @keydown.enter="doCreateSource()" v-model="loginUser">
+        <input type="password" @keydown.enter="doCreateSource()" v-model="loginPassword">
+        <button @click="doCreateSource()">Create</button>
+      </div>
     </div>
   </main>
   <footer></footer>
@@ -65,6 +80,8 @@ export default {
       loginPassword: "",
       searchResults: [],
       searchTerm: "",
+      newTopicLanguage: "",
+      newTopicTitle: "",
     }
   },
   components: {
@@ -84,6 +101,16 @@ export default {
           store.setUser(this.loginUser, response.token)
         }
       })
+    },
+    doCreateTopic() {
+      api.fetch('/api/topic/', 'POST', {title: this.newTopicTitle, language: this.newTopicLanguage}).then(response => {
+        if (response.id) {
+          this.$router.push({ name: 'Topic', params: { topicName: this.newTopicTitle } })
+        } else {
+          this.error = response
+        }
+      })
+
     },
     toggleAddMenu () {
       if (this.addMenu) {
@@ -243,14 +270,28 @@ main p {
   padding: 32px 64px;
   text-align: center;
 }
-input, input:focus {
+input, input:focus, select {
   font-size: 18px;
   padding: 8px;
   border: 1px solid #ccc;
   outline: none;
 }
-#overlay input {
-  width: 50%;
+button {
+  margin: 40px 0;
+  padding: 12px 24px;
+  font-size: 18px;
+  border-top-right-radius: 24px;
+  border-bottom-left-radius: 24px;
+  box-shadow: 0px 0px 20px 4px rgba(0,0,0,0.10);
+  background: white;
+  border: 2px solid #294370;
+  cursor: pointer;
+}
+#overlay input, #overlay select, #overlay button {
+  width: 70%;
   margin: 15px auto;
+}
+#overlay input {
+  width: calc(70% - 20px);
 }
 </style>
