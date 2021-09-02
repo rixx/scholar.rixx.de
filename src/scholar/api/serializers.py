@@ -72,7 +72,7 @@ class SourceCardSerializer(FirstCardSerializer):
 
 
 class SourceSerializer(serializers.ModelSerializer):
-    cards = SourceCardSerializer(many=True)
+    cards = SourceCardSerializer(many=True, required=False)
 
     class Meta:
         model = Source

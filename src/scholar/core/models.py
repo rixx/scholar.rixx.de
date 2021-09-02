@@ -34,7 +34,7 @@ class Topic(BaseModel):
 
     title = models.CharField(max_length=100, unique=True)
 
-    info_box = models.JSONField(null=True)
+    info_box = models.JSONField(null=True, blank=True)
     language = models.CharField(
         choices=(("de", "German"), ("en", "English")), default="en", max_length=2
     )
@@ -63,8 +63,8 @@ class Card(OrderedModel, BaseModel):
     )
     sources = models.ManyToManyField("Source", through="CardSourceThrough")
     references = models.ManyToManyField(Topic, through="CardTopicThrough")
-    prediction_deadline = models.DateTimeField(null=True)
-    prediction_result = models.BooleanField(null=True)
+    prediction_deadline = models.DateTimeField(null=True, blank=True)
+    prediction_result = models.BooleanField(null=True, blank=True)
 
     order_with_respect_to = "topic"
 
@@ -77,9 +77,9 @@ class Card(OrderedModel, BaseModel):
 
 class Source(BaseModel):
     title = models.CharField(max_length=100)
-    author = models.CharField(max_length=100, null=True)
-    notes = models.TextField(null=True)
-    url = models.URLField(max_length=200, null=True)
+    author = models.CharField(max_length=100, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    url = models.URLField(max_length=200, null=True, blank=True)
     trust = models.IntegerField(
         choices=(
             (0, "incorrect"),
