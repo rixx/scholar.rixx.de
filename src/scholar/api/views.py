@@ -55,7 +55,7 @@ class CardViewSet(BaseViewSet):
 class TopicViewSet(BaseViewSet):
     serializer_class = TopicSerializer
     queryset = Topic.objects.all()
-    lookup_field = "title"
+    lookup_field = "slug"
 
 
 @decorators.api_view()
@@ -71,7 +71,11 @@ def search(request):
     all_results = [
         (
             "topic",
-            Topic.objects.filter(title__icontains=search_term),
+            Topic.objects.filter(
+                Q(slug__icontains=search_term),
+                Q(title_en__icontains=search_term),
+                Q(title_de__icontains=search_term),
+            ),
             FlatTopicSerializer,
         ),
         (
@@ -83,7 +87,14 @@ def search(request):
             ),
             FlatSourceSerializer,
         ),
-        ("tag", Tag.objects.filter(name__icontains=search_term), FlatTagSerializer),
+        (
+            "tag",
+            Tag.objects.filter(
+                name_en__icontains=search_term,
+                name_de__icontains=search_term,
+            ),
+            FlatTagSerializer,
+        ),
     ]
     for model, qs, serializer_class in all_results:
         if short:

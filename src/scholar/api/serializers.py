@@ -10,7 +10,8 @@ class FirstCardSerializer(serializers.ModelSerializer):
         model = Card
         fields = (
             "id",
-            "text",
+            "text_en",
+            "text_de",
             "topic",
             "sources",
             "references",
@@ -24,7 +25,7 @@ class FlatTopicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Topic
-        fields = ("id", "title", "info_box", "language", "translation")
+        fields = ("id", "slug", "title_en", "title_de", "info_box")
 
 
 class TopicFirstCardSerializer(serializers.ModelSerializer):
@@ -39,10 +40,10 @@ class TopicFirstCardSerializer(serializers.ModelSerializer):
         model = Topic
         fields = (
             "id",
-            "title",
+            "slug",
+            "title_en",
+            "title_de",
             "info_box",
-            "language",
-            "translation",
             "first_card",
         )
 
@@ -52,7 +53,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ("id", "name", "topics")
+        fields = ("id", "name_en", "name_de", "topics")
 
 
 class FlatTagSerializer(serializers.ModelSerializer):
@@ -60,7 +61,7 @@ class FlatTagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ("id", "name")
+        fields = ("id", "name_en", "name_de")
 
 
 class SourceCardSerializer(FirstCardSerializer):
@@ -68,7 +69,14 @@ class SourceCardSerializer(FirstCardSerializer):
 
     class Meta:
         model = Card
-        fields = ("id", "text", "topic", "prediction_deadline", "prediction_result")
+        fields = (
+            "id",
+            "text_en",
+            "text_de",
+            "topic",
+            "prediction_deadline",
+            "prediction_result",
+        )
 
 
 class SourceSerializer(serializers.ModelSerializer):
@@ -76,13 +84,31 @@ class SourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Source
-        fields = ("id", "title", "url", "trust", "cards", "author", "notes")
+        fields = (
+            "id",
+            "title",
+            "url",
+            "trust",
+            "cards",
+            "author",
+            "notes_en",
+            "notes_de",
+        )
 
 
 class FlatSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source
-        fields = ("id", "title", "url", "trust", "cards", "author", "notes")
+        fields = (
+            "id",
+            "title",
+            "url",
+            "trust",
+            "cards",
+            "author",
+            "notes_en",
+            "notes_de",
+        )
 
 
 class CardSerializer(serializers.ModelSerializer):
@@ -94,7 +120,8 @@ class CardSerializer(serializers.ModelSerializer):
         model = Card
         fields = (
             "id",
-            "text",
+            "text_en",
+            "text_de",
             "topic",
             "prediction_deadline",
             "prediction_result",
@@ -131,7 +158,8 @@ class CardWriteSerializer(serializers.ModelSerializer):
         model = Card
         fields = (
             "id",
-            "text",
+            "text_en",
+            "text_de",
             "topic",
             "prediction_deadline",
             "prediction_result",
@@ -151,10 +179,10 @@ class TopicSerializer(serializers.ModelSerializer):
         model = Topic
         fields = (
             "id",
-            "title",
+            "slug",
+            "title_en",
+            "title_de",
             "info_box",
-            "language",
-            "translation",
             "cards",
             "backrefs",
         )
