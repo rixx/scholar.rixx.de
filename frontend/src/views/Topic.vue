@@ -11,6 +11,10 @@
     <div v-else-if="topic">
       <card v-bind:key="card.id" v-for="card in this.topic.cards" :card="card"></card>
       <card :createCard="true" :parentTopic="topic" @cardCreate="refreshContent"></card>
+
+      <h2>Backrefs</h2>
+
+      <card v-bind:key="card.id" v-for="card in this.topic.backrefs" :card="card" :showTopic="true"></card>
     </div>
 
     <div v-else-if="loggedIn">

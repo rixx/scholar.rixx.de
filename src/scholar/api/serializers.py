@@ -139,6 +139,9 @@ class TopicSerializer(serializers.ModelSerializer):
     cards = CardSerializer(
         many=True, required=False
     )  # Duplicates topic info, we don't care for now
+    backrefs = CardSerializer(
+        many=True, required=False
+    )  # Duplicates topic info, which we need
 
     class Meta:
         model = Topic
@@ -149,4 +152,5 @@ class TopicSerializer(serializers.ModelSerializer):
             "language",
             "translation",
             "cards",
+            "backrefs",
         )

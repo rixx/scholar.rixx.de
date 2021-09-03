@@ -10,6 +10,7 @@
     <template v-else-if="createCard"><div @click="creating = true" class="create-placeholder">+</div></template>
     <template v-else>
       <div v-html="renderedText" @click="handleLink"></div>
+      <div v-if="showTopic && card.topic">{{ card.topic }}</div>
     </template>
   </div>
 </template>
@@ -48,6 +49,10 @@ export default {
       default: false
     },
     parentTopic: {
+      required: false,
+      default: false
+    },
+    showTopic: {
       required: false,
       default: false
     },

@@ -9,7 +9,7 @@
       loading, pls wait
     </div>
     <div v-else-if="source">
-      <card v-bind:key="card.id" v-for="card in this.source.cards" :card="card"></card>
+      <card v-bind:key="card.id" v-for="card in this.source.cards" :card="card" :showTopic="true"></card>
       <card :createCard="true" :parentSource="source" @cardCreate="refreshContent"></card>
     </div>
     <div v-else>
