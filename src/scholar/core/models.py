@@ -9,8 +9,7 @@ from django.utils.functional import cached_property
 from ordered_model.models import OrderedModel
 from rest_framework.authtoken.models import Token
 
-
-REFERENCE_REGEX = r'(?<=\[\[).*?(?=(?:\]\]|#|\|))'
+REFERENCE_REGEX = r"(?<=\[\[).*?(?=(?:\]\]|#|\|))"
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -36,16 +35,12 @@ class Topic(BaseModel):
     related ones.
     """
 
-    title = models.CharField(max_length=100, unique=True)
+    slug = models.CharField(max_length=100, unique=True)
+    title_de = models.CharField(max_length=100)
+    title_en = models.CharField(max_length=100)
 
     info_box = models.JSONField(null=True, blank=True)
-    language = models.CharField(
-        choices=(("de", "German"), ("en", "English")), default="en", max_length=2
-    )
     tags = models.ManyToManyField("Tag", related_name="topics")
-    translation = models.OneToOneField(
-        to="Topic", on_delete=models.SET_NULL, related_name="+", null=True
-    )
 
     @cached_property
     def sources(self):
@@ -61,12 +56,17 @@ class Card(OrderedModel, BaseModel):
     """Cards don't have to have a topic: they can just belong to one source,
     until a proper topic is found or made."""
 
-    text = models.TextField()
+    text_de = models.TextField()
+    text_en = models.TextField()
     topic = models.ForeignKey(
         to=Topic, on_delete=models.CASCADE, related_name="cards", null=True
     )
-    sources = models.ManyToManyField("Source", through="CardSourceThrough", related_name="cards")
-    references = models.ManyToManyField(Topic, through="CardTopicThrough", related_name="backrefs")
+    sources = models.ManyToManyField(
+        "Source", through="CardSourceThrough", related_name="cards"
+    )
+    references = models.ManyToManyField(
+        Topic, through="CardTopicThrough", related_name="backrefs"
+    )
     prediction_deadline = models.DateTimeField(null=True, blank=True)
     prediction_result = models.BooleanField(null=True, blank=True)
 
@@ -79,7 +79,7 @@ class Card(OrderedModel, BaseModel):
         references_text = set(re.findall(REFERENCE_REGEX, self.text))
         references_obj = []
         for word in references_text:
-            word = word.split('|')[-1]
+            word = word.split("|")[-1]
             topic = Topic.objects.filter(title__iexact=word).first()
             if not topic:
                 topic = Topic.objects.create(title=word)
@@ -91,7 +91,8 @@ class Card(OrderedModel, BaseModel):
 class Source(BaseModel):
     title = models.CharField(max_length=100)
     author = models.CharField(max_length=100, null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
+    notes_de = models.TextField(null=True, blank=True)
+    notes_en = models.TextField(null=True, blank=True)
     url = models.URLField(max_length=200, null=True, blank=True)
     trust = models.IntegerField(
         choices=(
@@ -124,4 +125,5 @@ class CardTopicThrough(OrderedModel):
 
 
 class Tag(BaseModel):
-    name = models.CharField(max_length=50)
+    name_en = models.CharField(max_length=50)
+    name_de = models.CharField(max_length=50)

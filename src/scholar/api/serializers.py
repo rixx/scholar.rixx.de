@@ -104,8 +104,12 @@ class CardSerializer(serializers.ModelSerializer):
 
 
 class CardWriteSerializer(serializers.ModelSerializer):
-    topic = serializers.PrimaryKeyRelatedField(read_only=False, queryset=Topic.objects.all(), required=False)
-    sources = serializers.PrimaryKeyRelatedField(read_only=False, many=True, queryset=Source.objects.all(), required=False)
+    topic = serializers.PrimaryKeyRelatedField(
+        read_only=False, queryset=Topic.objects.all(), required=False
+    )
+    sources = serializers.PrimaryKeyRelatedField(
+        read_only=False, many=True, queryset=Source.objects.all(), required=False
+    )
 
     def update(self, instance, validated_data):
         sources = validated_data.pop("sources", [])
