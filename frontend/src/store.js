@@ -2,7 +2,7 @@ import { reactive } from 'vue'
 
 const store = {
   debug: process.env.NODE_ENV !== "production",
-  user: reactive({name: null, token: null}),
+  user: reactive({name: null, token: null, language: ""}),
   history: reactive([]),
 
   setUser(name, token) {
@@ -34,6 +34,20 @@ const store = {
     this.history = this.history.filter(e => e != page)
     this.history.push(page)
     if (this.debug) console.log('[store] history is now', this.history)
+  },
+  getLanguage() {
+    if (this.user.language) {
+      return this.user.language
+    }
+    this.user.language = window.localStorage.getItem("scholarLanguage")
+    if (!this.user.language) {
+      this.setLanguage("en")
+    }
+    return this.user.language
+  },
+  setLanguage(language) {
+    this.user.language = language
+    window.localStorage.setItem("scholarLanguage", language)
   },
 }
 export default store

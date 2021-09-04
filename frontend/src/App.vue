@@ -1,4 +1,8 @@
 <template>
+  <select id="language" v-model="language" @change="updateLanguage()">
+    <option value="en">English</option>
+    <option value="de">Deutsch</option>
+  </select>
   <header>
     <div id="search-container" class="header-container" :class="{active: searching}">
       <img src="./assets/search.svg" @click="toggleSearch()">
@@ -36,7 +40,7 @@
 
   <main>
     <router-view @startLogin="startLogin" :loggedIn="loggedIn" v-slot="{ Component, route }">
-      <component :is="Component" :key="route.path" />
+      <component :is="Component" :key="route.path" :language="language" />
     </router-view>
 
     <div v-if="loggingIn || adding " id="overlay" @click="stopOverlay()" @keydown.esc="stopOverlay()">
@@ -97,9 +101,13 @@ export default {
       newSourceNotes: "",
       newSourceTrust: "",
       newSourceUrl: "",
+      language: "",
     }
   },
   components: {
+  },
+  created () {
+    this.language = store.getLanguage()
   },
   methods: {
     startLogin () {
@@ -136,6 +144,9 @@ export default {
           this.error = response
         }
       })
+    },
+    updateLanguage () {
+      store.setLanguage(this.language)
     },
     toggleAddMenu () {
       if (this.addMenu) {

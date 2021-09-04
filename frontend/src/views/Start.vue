@@ -1,4 +1,5 @@
 <template>
+  <div>
   <h1>Introduction</h1>
 
     <p class="card">
@@ -15,19 +16,22 @@
       at least some of its moving parts would work for you, too.
     </p>
     <card text="foo"></card>
-
+  </div>
 </template>
 <script>
 import Card from '@/components/Card'
+import store from '@/store'
 export default {
   name: 'start',
   components: { Card },
   data () {
     return { }
   },
+  props: {
+  },
   computed: {
-    something () {
-      return []
+    language () {
+      return store.user.language
     },
   },
   created () { },

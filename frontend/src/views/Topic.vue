@@ -1,20 +1,26 @@
 <template>
   <div>
-    <h1 v-if="topic">{{ topic.title }}</h1>
+    <h1 v-if="topic">
+      <span v-if="language === 'en'">{{ topic.title_en }}</span>
+      <span v-else>{{ topic.title_de }}</span>
+    </h1>
     <h1 v-else>{{ $route.params.topicName }}</h1>
 
     <div v-if="error">{{ error }}</div>
 
     <div v-if="loading">
       loading, pls wait
+      <p v-if="language === 'en'">loading, pls wait</p>
+      <p v-else>Warteschleifenmusik</p>
     </div>
+
     <div v-else-if="topic">
-      <card v-bind:key="card.id" v-for="card in this.topic.cards" :card="card"></card>
-      <card :createCard="true" :parentTopic="topic" @cardCreate="refreshContent"></card>
+      <card v-bind:key="card.id" v-for="card in this.topic.cards" :card="card" :language="language"></card>
+      <card :createCard="true" :parentTopic="topic" @cardCreate="refreshContent" :language="language"></card>
 
       <h2>Backrefs</h2>
 
-      <card v-bind:key="card.id" v-for="card in this.topic.backrefs" :card="card" :showTopic="true"></card>
+      <card v-bind:key="card.id" v-for="card in this.topic.backrefs" :card="card" :showTopic="true" :language="language"></card>
     </div>
 
     <div v-else-if="loggedIn">
@@ -23,28 +29,32 @@
       </p>
 
       <p>
-      <select v-model="createLanguage">
-        <option value="de">German</option>
-        <option value="en">English</option>
-      </select>
+      <input type="text" v-model="createTitleEn" placeholder="English title">
+      <input type="text" v-model="createTitleDe" placeholder="Deutscher Titel">
       <button @click="doCreate()">Create</button>
       </p>
     </div>
 
     <div v-else>
-      <p>
+      <p v-if="language == 'en'">
         Wouldn't it be nice if <strong>{{ $route.params.topicName }}</strong> existed?
         Tell me all about it via <a :href="contact.twitter">Twitter</a> or <a :href="contact.email">email</a>.
       </p>
-      <p>
+      <p v-else>
+        Wäre es nicht cool, wenn es <strong>{{ $route.params.topicName }}</strong> gäbe?
+        Erzähl mir auf <a :href="contact.twitter">Twitter</a> oder per <a :href="contact.email">Mail</a> davon!
+      </p>
+      <p v-if="language == 'en'">
         Or, if you're me, <strong @click="$emit('startLogin')">log in</strong> to create this page.
+      </p>
+      <p v-else>
+        Oder, wenn du ich bist (hi!), <strong @click="$emit('startLogin')">melde dich an</strong>, um die Seite zu erstellen.
       </p>
     </div>
   </div>
 </template>
 
 <script>
-// import store from '@/store'
 import api from '@/lib/api'
 import config from '@/config'
 import store from '@/store'
@@ -55,7 +65,8 @@ export default {
   data () {
     return {
       topic: null,
-      createLanguage: "",
+      createTitleEn: "",
+      createTitleDe: "",
       error: "",
       loading: true
     }
@@ -70,6 +81,9 @@ export default {
     contact () {
       return config.contact
     },
+    language () {
+      return store.user.language
+    },
   },
   created () {
     store.addHistory(this.$route.params.topicName)
@@ -79,7 +93,7 @@ export default {
   },
   methods: {
     doCreate () {
-      api.fetch('/api/topic/', 'POST', {title: this.$route.params.topicName, language: this.createLanguage}).then(response => {
+      api.fetch('/api/topic/', 'POST', {slug: this.$route.params.topicName, title_en: this.createTitleEn, title_de: this.createTitleDe}).then(response => {
         if (response.id) {
           this.topic = response
         } else {
