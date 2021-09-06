@@ -98,12 +98,10 @@ export default {
       const data = {text_en: this.createTextEn, text_de: this.createTextDe, topic: this.createTopic, sources: this.createSources}
       api.fetch(`/api/card/`, 'POST', data).then(response => {
         if (response.id) {
-          this.source = response
+          this.loading = false
+          this.$emit('cardCreated', response)
         }
-        this.loading = false
-        this.$emit('cardCreated')
       }).catch(() => {
-        this.source = null
         this.loading = false
       })
     },

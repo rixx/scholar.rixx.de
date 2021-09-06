@@ -13,7 +13,7 @@
     </div>
     <div v-else-if="source">
       <card v-bind:key="card.id" v-for="card in this.source.cards" :card="card" :showTopic="true" :language="language"></card>
-      <card :createCard="true" :parentSource="source" @cardCreate="refreshContent" :language="language" v-if="loggedIn"></card>
+      <card :createCard="true" :parentSource="source" @cardCreated="refreshContent" :language="language" v-if="loggedIn"></card>
     </div>
     <div v-else>
       <p v-if="language === 'en'">Source not found.</p>

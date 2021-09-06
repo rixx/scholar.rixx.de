@@ -83,7 +83,7 @@ def search(request):
         (
             "topic",
             Topic.objects.filter(
-                Q(title_en__icontains=search_term),
+                Q(title_en__icontains=search_term) |
                 Q(title_de__icontains=search_term),
             ),
             FlatTopicSerializer,
