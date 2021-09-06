@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.db.models import Q
+from django.http import Http404
 from rest_framework import decorators, permissions, viewsets
 from rest_framework.response import Response
 
@@ -57,6 +58,16 @@ class TopicViewSet(BaseViewSet):
     queryset = Topic.objects.all()
     lookup_field = "slug"
 
+    def get_object(self):
+        slug = self.kwargs["slug"]
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = queryset.filter(
+            Q(title_en__iexact=slug) | Q(title_de__iexact=slug)
+        ).first()
+        if not obj:
+            raise Http404()
+        return obj
+
 
 @decorators.api_view()
 def search(request):
@@ -72,7 +83,6 @@ def search(request):
         (
             "topic",
             Topic.objects.filter(
-                Q(slug__icontains=search_term),
                 Q(title_en__icontains=search_term),
                 Q(title_de__icontains=search_term),
             ),

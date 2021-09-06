@@ -1,4 +1,6 @@
+from django.db.models import Q
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from scholar.core.models import Card, Source, Tag, Topic
 
@@ -179,10 +181,18 @@ class TopicSerializer(serializers.ModelSerializer):
         model = Topic
         fields = (
             "id",
-            "slug",
             "title_en",
             "title_de",
             "info_box",
             "cards",
             "backrefs",
         )
+
+    def create(self, validated_data):
+        if Topic.objects.filter(
+            Q(title_en=validated_data["title_en"])
+            | Q(title_de=validated_data["title_de"])
+            | Q(title_en=validated_data["title_de"])
+            | Q(title_de=validated_data["title_en"])
+        ).exists():
+            raise ValidationError("Topic by this name exists already!")

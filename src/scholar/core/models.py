@@ -35,7 +35,6 @@ class Topic(BaseModel):
     related ones.
     """
 
-    slug = models.CharField(max_length=100, unique=True)
     title_de = models.CharField(max_length=100)
     title_en = models.CharField(max_length=100)
 
