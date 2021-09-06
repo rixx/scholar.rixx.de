@@ -122,6 +122,7 @@ export default {
       api.fetch('/api/login/', 'POST', {username: this.loginUser, password: this.loginPassword}).then(response => {
         if (response.token) {
           store.setUser(this.loginUser, response.token)
+          this.stopOverlay()
         }
       })
     },
