@@ -28,7 +28,7 @@
         Wouldn't it be nice if <strong>{{ $route.params.topicName }}</strong> existed? Create it now!
       </p>
 
-      <p>
+      <p class="card">
       <input type="text" v-model="createTitleEn" placeholder="English title">
       <input type="text" v-model="createTitleDe" placeholder="Deutscher Titel">
       <button @click="doCreate()">Create</button>

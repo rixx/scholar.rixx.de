@@ -1,9 +1,13 @@
 <template>
   <div class="card">
     <template v-if="creating">
-      <textarea v-model="createText"></textarea>
-      <select v-model="createTopic">
+      <textarea v-model="createTextEn" placeholder="Text (en)"></textarea>
+      <textarea v-model="createTextDe" placeholder="Text (de)"></textarea>
+      <select v-model="createTopic" v-if="!parentTopic">
         <option v-for="topic in availableTopics" v-bind:key="topic.id" :value="topic.id">{{ topic.title }}</option>
+      </select>
+      <select v-model="createSources" v-if="!parentSource" multiple>
+        <option v-for="source in availableSources" v-bind:key="source.id" :value="source.id">{{ source.title }}</option>
       </select>
       <button @click="doCreate()">create</button>
     </template>
@@ -24,7 +28,8 @@ export default {
     return {
       creating: false,
       editing: false,
-      createText: "",
+      createTextDe: "",
+      createTextEn: "",
       createSources: [],
       createTopic: null,
       availableSources: [],
@@ -37,6 +42,10 @@ export default {
       default: null
     },
     text: {
+      required: false,
+      default: null
+    },
+    language: {
       required: false,
       default: null
     },
@@ -58,16 +67,20 @@ export default {
     },
   },
   computed: {
+    baseText () {
+      return this.text || (this.language == "en" ? this.card.text_en : this.card.text_de)
+
+    },
     renderedText () {
-      return renderMarkdown(this.text || this.card?.text)
+      return renderMarkdown(this.baseText)
     },
   },
   created () {
     if (this.parentSource) {
-      this.createSources.push(this.parentSource)
+      this.createSources.push(this.parentSource.id)
     }
     if (this.parentTopic) {
-      this.createTopic = this.parentTopic
+      this.createTopic = this.parentTopic.id
     }
   },
   mounted () {
@@ -82,7 +95,7 @@ export default {
   },
   methods: {
     doCreate () {
-      const data = {text: this.createText, topic: this.createTopic, sources: this.createSources.map(e => e.id)}
+      const data = {text_en: this.createTextEn, text_de: this.createTextDe, topic: this.createTopic, sources: this.createSources}
       api.fetch(`/api/card/`, 'POST', data).then(response => {
         if (response.id) {
           this.source = response
