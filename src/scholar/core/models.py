@@ -75,14 +75,38 @@ class Card(OrderedModel, BaseModel):
         pass
 
     def update_references(self):
-        references_text = set(re.findall(REFERENCE_REGEX, self.text))
-        references_obj = []
-        for word in references_text:
-            word = word.split("|")[-1]
-            topic = Topic.objects.filter(title__iexact=word).first()
-            if not topic:
-                topic = Topic.objects.create(title=word)
-            references_obj.append(topic)
+        references_en = list(re.findall(REFERENCE_REGEX, self.text_en))
+        references_de = list(re.findall(REFERENCE_REGEX, self.text_de))
+        references_obj = set()
+        if len(references_de) == len(references_en):
+            # we can be clever here
+            # and by "clever" I mean that everything is still terrible
+            # but within the constraints of the data model, we can be clever
+            for word_en, word_de in zip(references_en, references_de):
+                topic_en = Topic.objects.filter(title_en__iexact=word_en).first()
+                topic_de = Topic.objects.filter(title_en__iexact=word_de).first()
+                if topic_en and topic_de:
+                    references_obj.add(topic_en)
+                    references_obj.add(topic_de)
+                elif not topic_en and not topic_de:
+                    topic = Topic.objects.create(title_en=word_en, title_de=word_de)
+                    references_obj.add(topic)
+                elif topic_en:
+                    references_obj.add(topic_en)
+                    topic = Topic.objects.create(title_en=word_de, title_de=word_de)
+                    references_obj.add(topic)
+                else:
+                    references_obj.add(topic_de)
+                    topic = Topic.objects.create(title_en=word_en, title_de=word_en)
+                    references_obj.add(topic)
+        else:
+            for word in references_en + references_de:
+                topic = Topic.objects.filter(
+                    Q(title_en__iexact=word) | Q(title_de__iexact=word)
+                ).first()
+                if not topic:
+                    topic = Topic.objects.create(title_en=word, title_de=word)
+                references_obj.add(topic)
         self.references.set(references_obj)
         return references_obj
 

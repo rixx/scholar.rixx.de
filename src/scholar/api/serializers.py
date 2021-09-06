@@ -27,7 +27,7 @@ class FlatTopicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Topic
-        fields = ("id", "slug", "title_en", "title_de", "info_box")
+        fields = ("id", "title_en", "title_de", "info_box")
 
 
 class TopicFirstCardSerializer(serializers.ModelSerializer):
@@ -42,7 +42,6 @@ class TopicFirstCardSerializer(serializers.ModelSerializer):
         model = Topic
         fields = (
             "id",
-            "slug",
             "title_en",
             "title_de",
             "info_box",
