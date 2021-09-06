@@ -1,8 +1,8 @@
 <template>
   <div class="card">
     <template v-if="creating">
-      <textarea v-model="createTextEn" placeholder="Text (en)"></textarea>
-      <textarea v-model="createTextDe" placeholder="Text (de)"></textarea>
+      <textarea v-model="createTextEn" placeholder="Text (en)" @input="resizeTextarea" rows=4></textarea>
+      <textarea v-model="createTextDe" placeholder="Text (de)" @input="resizeTextarea" rows=4></textarea>
       <select v-model="createTopic" v-if="!parentTopic">
         <option v-for="topic in availableTopics" v-bind:key="topic.id" :value="topic.id">{{ topic.title }}</option>
       </select>
@@ -135,6 +135,13 @@ export default {
           this.$router.push(to)
         }
       }
+    },
+    resizeTextarea (event) {
+      let { target } = event
+      while (target && target.tagName !== 'TEXTAREA') target = target.parentNode
+      target.style.overflow = 'hidden';
+      console.log(target)
+      target.style.height = target.scrollHeight - 16 + 'px'
     },
   },
 }

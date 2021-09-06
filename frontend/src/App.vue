@@ -9,8 +9,10 @@
       <input v-if="searching" v-model="searchTerm" @keydown.esc="toggleSearch()" @input="updateSearch()">
       <div v-if="searching && searchResults.length" id="search-results">
         <template v-for="result in searchResults" v-bind:key="result.id">
-          <router-link v-if="result.type === 'topic'" :to="{ name: 'Topic', params: { topicName: result.title } }" @click="searching = false">
-            <strong>Topic: </strong> {{ result.title }}
+          <router-link v-if="result.type === 'topic'" :to="{ name: 'Topic', params: { topicName: language === 'en' ? result.title_en : result.title_de } }" @click="searching = false">
+            <strong>Topic: </strong>
+            <span v-if="language == 'en'">{{ result.title_en }}</span>
+            <span v-else>{{ result.title_de }}</span>
           </router-link>
           <router-link v-else-if="result.type === 'source'" :to="{ name: 'Source', params: { sourceId: result.id } }" @click="searching = false">
             <strong>Source: </strong> {{ result.title }}
