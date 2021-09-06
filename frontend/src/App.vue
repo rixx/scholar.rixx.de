@@ -51,18 +51,16 @@
       </div>
       <div class="card" @click.stop="" @keydown.esc="stopOverlay()" v-else-if="adding == 'topic'">
         <h2>New topic</h2>
-        <input type="text" @keydown.enter="doCreateTopic()" v-model="newTopicTitle">
-        <select v-model="newTopicLanguage" @keydown.enter="doCreateTopic()">
-          <option value="de">German</option>
-          <option value="en">English</option>
-        </select>
+        <input type="text" @keydown.enter="doCreateTopic()" v-model="newTopicTitleEn" placeholder="Title (en)">
+        <input type="text" @keydown.enter="doCreateTopic()" v-model="newTopicTitleDe" placeholder="Title (de)">
         <button @click="doCreateTopic()">Create</button>
       </div>
       <div class="card" @click.stop="" @keydown.esc="stopOverlay()" v-else-if="adding == 'source'">
         <h2>New source</h2>
         <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceTitle" placeholder="Title">
         <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceAuthor" placeholder="Author">
-        <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceNotes" placeholder="Notes">
+        <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceNotesEn" placeholder="Notes (en)">
+        <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceNotesDe" placeholder="Notes (de)">
         <input type="text" @keydown.enter="doCreateSource()" v-model="newSourceUrl" placeholder="URL">
         <select v-model="newSourceTrust" @keydown.enter="doCreateSource()">
           <option value="5">excellent source</option>
@@ -94,11 +92,12 @@ export default {
       loginPassword: "",
       searchResults: [],
       searchTerm: "",
-      newTopicLanguage: "",
-      newTopicTitle: "",
+      newTopicTitleDe: "",
+      newTopicTitleEn: "",
       newSourceTitle: "",
       newSourceAuthor: "",
-      newSourceNotes: "",
+      newSourceNotesEn: "",
+      newSourceNotesDe: "",
       newSourceTrust: "",
       newSourceUrl: "",
       language: "",
@@ -127,17 +126,17 @@ export default {
       })
     },
     doCreateTopic() {
-      api.fetch('/api/topic/', 'POST', {title: this.newTopicTitle, language: this.newTopicLanguage}).then(response => {
+      api.fetch('/api/topic/', 'POST', {title_en: this.newTopicTitleEn, title_de: this.newTopicTitleDe}).then(response => {
         if (response.id) {
           this.stopOverlay()
-          this.$router.push({ name: 'Topic', params: { topicName: this.newTopicTitle } })
+          this.$router.push({ name: 'Topic', params: { topicName: this.language == "en" ? this.newTopicTitleEn : this.newTopicTitleDe } })
         } else {
           this.error = response
         }
       })
     },
     doCreateSource() {
-      api.fetch('/api/source/', 'POST', {title: this.newSourceTitle, author: this.newSourceAuthor, url: this.newSourceUrl, trust: this.newSourceTrust, notes: this.newSourceNotes}).then(response => {
+      api.fetch('/api/source/', 'POST', {title: this.newSourceTitle, author: this.newSourceAuthor, url: this.newSourceUrl, trust: this.newSourceTrust, notes_de: this.newSourceNotesDe, notes_en: this.newSourceNotesEn}).then(response => {
         if (response.id) {
           this.stopOverlay()
           this.$router.push({ name: 'Source', params: { sourceId: response.id } })

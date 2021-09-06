@@ -196,3 +196,4 @@ class TopicSerializer(serializers.ModelSerializer):
             | Q(title_de=validated_data["title_en"])
         ).exists():
             raise ValidationError("Topic by this name exists already!")
+        return super().create(validated_data)
