@@ -14,7 +14,14 @@
     <template v-else-if="createCard"><div @click="creating = true" class="create-placeholder">+</div></template>
     <template v-else>
       <div v-html="renderedText" @click="handleLink"></div>
-      <div v-if="showTopic && card.topic">{{ card.topic }}</div>
+      <div v-if="showTopic && card.topic" class="topic">
+        <i>
+          in
+          <router-link :to="{ name: 'Topic', params: { topicName: language === 'en' ? card.topic.title_en : card.topic.title_de } }">
+            <span v-if="language == 'en'">{{ card.topic.title_en }}</span>
+            <span v-else>{{ card.topic.title_de }}</span>
+          </router-link></i><br>
+      </div>
     </template>
   </div>
 </template>
@@ -172,5 +179,8 @@ export default {
   margin-bottom: 24px;
   padding: 8px 16px;
   line-height: 1.8;
+}
+.card .topic {
+  text-align: right
 }
 </style>
