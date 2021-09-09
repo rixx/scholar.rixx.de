@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" @mouseover="hovering = true" @mouseleave="hovering = false">
     <template v-if="creating">
       <textarea v-model="createTextEn" placeholder="Text (en)" @input="resizeTextarea" rows=4></textarea>
       <textarea v-model="createTextDe" placeholder="Text (de)" @input="resizeTextarea" rows=4></textarea>
@@ -23,6 +23,12 @@
           </router-link></i><br>
       </div>
     </template>
+    <div class="card-tools" v-if="card && card.id && (hovering | editing)">
+      <div v-if="!editing" class="card-tool" @click="editing = true">edit</div>
+      <div v-if="editing" class="card-tool">save</div>
+      <div v-if="editing" class="card-tool" @click="editing = false">stop</div>
+      <div class="card-tool">delete</div>
+    </div>
   </div>
 </template>
 <script>
@@ -41,6 +47,7 @@ export default {
       createTopic: null,
       availableSources: [],
       availableTopics: [],
+      hovering: false,
     }
   },
   props: {
@@ -163,6 +170,7 @@ export default {
   background: white;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 .card:hover {
   box-shadow: 0px 0px 20px 7px rgba(0,0,0,0.12);
@@ -182,5 +190,17 @@ export default {
 }
 .card .topic {
   text-align: right
+}
+.card .card-tools {
+  position: absolute;
+  left: 100%;
+  top: 16px;
+  width: 80px;
+  padding: 24px;
+  display: flex;
+}
+.card .card-tool {
+  margin: 0 8px;
+  cursor: pointer;
 }
 </style>
