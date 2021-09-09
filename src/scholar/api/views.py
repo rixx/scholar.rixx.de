@@ -59,7 +59,7 @@ class TopicViewSet(BaseViewSet):
     lookup_field = "slug"
 
     def get_object(self):
-        slug = self.kwargs["slug"]
+        slug = self.kwargs["slug"].replace("_", " ")
         queryset = self.filter_queryset(self.get_queryset())
         obj = queryset.filter(
             Q(title_en__iexact=slug) | Q(title_de__iexact=slug)
