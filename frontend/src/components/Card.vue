@@ -1,15 +1,19 @@
 <template>
   <div class="card" @mouseover="hovering = true" @mouseleave="hovering = false">
-    <template v-if="creating">
-      <textarea v-model="createTextEn" placeholder="Text (en)" @input="resizeTextarea" rows=4></textarea>
-      <textarea v-model="createTextDe" placeholder="Text (de)" @input="resizeTextarea" rows=4></textarea>
-      <select v-model="createTopic" v-if="!parentTopic">
-        <option v-for="topic in availableTopics" v-bind:key="topic.id" :value="topic.id">{{ topic.title }}</option>
+    <template v-if="creating || editing">
+      <textarea class="resize" v-model="createTextEn" placeholder="Text (en)" @input="resizeTextarea" rows=4></textarea>
+      <textarea class="resize" v-model="createTextDe" placeholder="Text (de)" @input="resizeTextarea" rows=4></textarea>
+      <select v-model="createTopic" v-if="!parentTopic || editing">
+        <option v-for="topic in availableTopics" v-bind:key="topic.id" :value="topic.id">
+          <span v-if="language == 'en'">{{ topic.title_en }}</span>
+          <span v-else>{{ topic.title_de }}</span>
+        </option>
       </select>
-      <select v-model="createSources" v-if="!parentSource" multiple>
+      <select v-model="createSources" v-if="!parentSource || editing" multiple>
         <option v-for="source in availableSources" v-bind:key="source.id" :value="source.id">{{ source.title }}</option>
       </select>
-      <button @click="doCreate()">create</button>
+      <button v-if="creating" @click="doUpdate()">create</button>
+      <button v-if="editing" @click="doUpdate()">save</button>
     </template>
     <template v-else-if="createCard"><div @click="creating = true" class="create-placeholder">+</div></template>
     <template v-else>
@@ -24,9 +28,8 @@
       </div>
     </template>
     <div class="card-tools" v-if="card && card.id && (hovering | editing)">
-      <div v-if="!editing" class="card-tool" @click="editing = true">edit</div>
-      <div v-if="editing" class="card-tool">save</div>
-      <div v-if="editing" class="card-tool" @click="editing = false">stop</div>
+      <div v-if="!editing" class="card-tool" @click="startEditing">edit</div>
+      <div v-if="editing" class="card-tool" @click="stopEditing">stop</div>
       <div class="card-tool">delete</div>
     </div>
   </div>
@@ -108,18 +111,53 @@ export default {
     }
   },
   methods: {
-    doCreate () {
+    doUpdate () {
       const data = {text_en: this.createTextEn, text_de: this.createTextDe, topic: this.createTopic, sources: this.createSources}
-      api.fetch(`/api/card/`, 'POST', data).then(response => {
+      let url = '/api/card/'
+      let method = 'POST'
+      let creating = true
+      if (this.card && this.card.id) {
+        data.id = this.card.id
+        url += this.card.id + "/"
+        method = 'PUT'
+        creating = false
+      }
+      api.fetch(url, method, data).then(response => {
         if (response.id) {
           this.loading = false
           this.createTextEn = ""
           this.createTextDe = ""
-          this.$emit('cardCreated', response)
+          if (creating) {
+            this.$emit('cardCreated', response)
+          } else {
+            this.stopEditing()
+            this.$emit('cardUpdated', response)
+          }
         }
       }).catch(() => {
         this.loading = false
       })
+    },
+    startEditing () {
+      if (!this.availableTopics.length) {
+        api.fetch('/api/topic/', 'GET').then(response => this.availableTopics = response)
+      }
+      if (!this.availableSources.length) {
+        api.fetch('/api/source/', 'GET').then(response => this.availableSources = response)
+      }
+      this.createTextDe = this.card.text_de
+      this.createTextEn = this.card.text_en
+      this.createTopic = this.card.topic.id
+      this.createSources = this.card.sources.map(s => s.id)
+      this.editing = true
+      window.setTimeout(() => document.querySelectorAll("textarea.resize").forEach(ta => this.resizeTextarea(ta)), 5)
+    },
+    stopEditing () {
+      this.createTextDe = ""
+      this.createTextEn = ""
+      this.createTopic = ""
+      this.createSources = ""
+      this.editing = false
     },
     handleLink (event) {
       // via https://dennisreimann.de/articles/delegating-html-links-to-vue-router.html
@@ -151,10 +189,14 @@ export default {
       }
     },
     resizeTextarea (event) {
-      let { target } = event
-      while (target && target.tagName !== 'TEXTAREA') target = target.parentNode
+      let target = null
+      if (event.tagName && event.tagName === 'TEXTAREA') {
+        target = event
+      } else {
+        let { target } = event
+        while (target && target.tagName !== 'TEXTAREA') target = target.parentNode
+      }
       target.style.overflow = 'hidden';
-      console.log(target)
       target.style.height = target.scrollHeight - 16 + 'px'
     },
   },

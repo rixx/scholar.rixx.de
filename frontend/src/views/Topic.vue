@@ -15,12 +15,12 @@
     </div>
 
     <div v-else-if="topic">
-      <card v-bind:key="card.id" v-for="card in this.topic.cards" :card="card" :language="language"></card>
+      <card v-bind:key="card.id" v-for="card in this.topic.cards" :card="card" :language="language" @cardUpdated="refreshContent"></card>
       <card :createCard="true" :parentTopic="topic" @cardCreated="refreshContent" :language="language" v-if="loggedIn"></card>
 
       <h2 v-if="this.topic.backrefs.length">Backrefs</h2>
 
-      <card v-bind:key="card.id" v-for="card in this.topic.backrefs" :card="card" :showTopic="true" :language="language"></card>
+      <card v-bind:key="card.id" v-for="card in this.topic.backrefs" :card="card" :showTopic="true" :language="language" @cardUpdated="refreshContent"></card>
     </div>
 
     <div v-else-if="loggedIn">
@@ -111,7 +111,7 @@ export default {
         this.topic = null
         this.loading = false
       })
-    }
+    },
   }
 }
 </script>
