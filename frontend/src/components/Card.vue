@@ -99,6 +99,8 @@ export default {
       api.fetch(`/api/card/`, 'POST', data).then(response => {
         if (response.id) {
           this.loading = false
+          this.createTextEn = ""
+          this.createTextDe = ""
           this.$emit('cardCreated', response)
         }
       }).catch(() => {
