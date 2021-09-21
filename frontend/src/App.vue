@@ -198,7 +198,7 @@ export default {
   color: #294370;
 }
 header {
-  position: absolute;
+  position: fixed;
   display: flex;
   flex-direction: column;
   width: 40px;
