@@ -36,7 +36,9 @@
         </div>
       </div>
     </div>
-    <img src="./assets/cards.svg">
+    <router-link :to="{ name: 'TopicList' }">
+      <img src="./assets/cards.svg">
+    </router-link>
     <img v-if="!user.token" @click="startLogin()" src="./assets/login.svg">
   </header>
 

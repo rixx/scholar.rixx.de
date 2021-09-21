@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 import Start from "@/views/Start.vue";
 import Topic from "@/views/Topic.vue";
+import TopicList from "@/views/TopicList.vue";
 import Source from "@/views/Source.vue";
 
 const routes = [
@@ -8,6 +9,11 @@ const routes = [
     path: "/",
     name: "Start",
     component: Start,
+  },
+  {
+    path: "/t/",
+    name: "TopicList",
+    component: TopicList,
   },
   {
     path: "/t/:topicName",
