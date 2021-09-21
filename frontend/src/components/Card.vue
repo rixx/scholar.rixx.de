@@ -18,6 +18,13 @@
     <template v-else-if="createCard"><div @click="creating = true" class="create-placeholder">+</div></template>
     <template v-else>
       <div v-html="renderedText" @click="handleLink"></div>
+      <p v-if="card.sources && card.sources.length" class="sources">
+        (<span v-for="source in card.sources" v-bind:key="source.id">
+          <router-link :to="{ name: 'Source', params: { sourceId: source.id } }">
+          {{ source.title }}
+          </router-link>
+        </span>)
+      </p>
       <div v-if="showTopic && card.topic" class="topic">
         <i>
           in
@@ -232,6 +239,12 @@ export default {
 }
 .card .topic {
   text-align: right
+}
+.card .sources, .card .sources a {
+  text-decoration: none;
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1;
 }
 .card .card-tools {
   position: absolute;
