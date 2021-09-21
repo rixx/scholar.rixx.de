@@ -1,8 +1,7 @@
 <template>
   <div>
     <h1 v-if="topic">
-      <span v-if="language === 'en'">{{ topic.title_en }}</span>
-      <span v-else>{{ topic.title_de }}</span>
+      {{ currentTitle }}
     </h1>
     <h1 v-else>{{ $route.params.topicName }}</h1>
 
@@ -84,6 +83,10 @@ export default {
     language () {
       return store.user.language
     },
+    currentTitle () {
+      let title = this.language === "en" ? this.topic.title_en : this.topic.title_de
+      return title.charAt(0).toUpperCase() + title.slice(1);
+    }
   },
   created () {
     store.addHistory(this.$route.params.topicName)
