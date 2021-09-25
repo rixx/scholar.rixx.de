@@ -169,7 +169,7 @@ export default {
     handleLink (event) {
       // via https://dennisreimann.de/articles/delegating-html-links-to-vue-router.html
       let { target } = event
-      while (target && target.tagName !== 'A') target = target.parentNode
+      while (target && target.tagName !== 'A' && target.parentNode) target = target.parentNode
       // handle only links that occur inside the component and do not reference external resources
       if (target && target.matches(".dynamic-content a:not([href*='://'])") && target.href) {
         // some sanity checks taken from vue-router:
@@ -201,7 +201,7 @@ export default {
         target = event
       } else {
         let { target } = event
-        while (target && target.tagName !== 'TEXTAREA') target = target.parentNode
+        while (target && target.tagName !== 'TEXTAREA' && target.parentNode) target = target.parentNode
       }
       target.style.overflow = 'hidden';
       target.style.height = target.scrollHeight - 16 + 'px'
