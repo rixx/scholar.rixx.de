@@ -85,6 +85,8 @@ class Card(OrderedModel, BaseModel):
             for word_en, word_de in zip(references_en, references_de):
                 topic_en = Topic.objects.filter(title_en__iexact=word_en).first()
                 topic_de = Topic.objects.filter(title_en__iexact=word_de).first()
+                word_en = word_en.capitalize()
+                word_de = word_de.capitalize()
                 if topic_en and topic_de:
                     references_obj.add(topic_en)
                     references_obj.add(topic_de)

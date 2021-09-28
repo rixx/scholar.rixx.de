@@ -60,24 +60,24 @@ class Command(BaseCommand):
         title_de = inquirer.text("English title")
         return Topic.objects.create(title_en=title_en, title_de=title_de)
 
-    def add_card(self):
-        topic = self.get_topic(new_ok=True)
+    def add_card(self, topic=None):
+        if not topic:
+            topic = self.get_topic(new_ok=True)
 
-    def edit_card(self):
-        topic = self.get_topic()
+    def edit_card(self, topic=None):
+        if not topic:
+            topic = self.get_topic()
 
     def show_topic(self):
         topic = self.get_topic()
-        for card in topic.cards.all():
-            self.print_card(card)
-        print("Backrefs:")
-        for card in topic.backrefs.all():
-            self.print_card(card, with_topic=True)
+        self.print_topic(topic)
         action = inquirer.list_input(
             message="What do you want to do?",
             choices=[
                 ("Delete topic", "delete_topic"),
-                ("Edit topic", "edit_topic"),
+                ("Edit topic title", "edit_topic"),
+                ("Edit a card", "edit_card"),
+                ("Add a card", "new_card"),
                 ("Continue", None),
             ],
             carousel=True,
@@ -89,6 +89,21 @@ class Command(BaseCommand):
             topic.delete()
             for card in backrefs:
                 card.update_references()
+        elif action == "edit_topic":
+            topic.title_en = inquirer.text("English title", default=topic.title_en)
+            topic.title_de = inquirer.text("English title", default=topic.title_de)
+            topic.save()
+        elif action == "edit_card":
+            self.edit_card(topic=topic)
+        elif action == "add_card":
+            self.add_card(topic=topic)
+
+    def print_topic(self, topic):
+        for card in topic.cards.all():
+            self.print_card(card)
+        print("Backrefs:")
+        for card in topic.backrefs.all():
+            self.print_card(card, with_topic=True)
 
     def print_card(self, card, width=70, buffer=6, with_topic=False):
         def line(text_left, text_right, align="left"):
