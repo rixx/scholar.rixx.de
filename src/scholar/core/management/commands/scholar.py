@@ -7,6 +7,8 @@ from django.db.models import Q
 
 from scholar.core.models import Card, Topic
 
+SEPARATOR = "-+--+-\n"
+
 
 class Command(BaseCommand):
     help = "Use scholar.rixx.de from the shell"
@@ -63,10 +65,57 @@ class Command(BaseCommand):
     def add_card(self, topic=None):
         if not topic:
             topic = self.get_topic(new_ok=True)
+        text_en, text_de = inquirer.editor("", default=SEPARATOR).split(SEPARATOR)
+        card = Card.objects.create(text_de=text_de, text_en=text_en, topic=topic)
+        card.update_references()
+        action = inquirer.list_input(
+            message="What do you want to do?",
+            choices=[
+                ("Add another card", "new_card"),
+                ("Continue", None),
+            ],
+            carousel=True,
+        )
+        if not action:
+            return card
+        return self.add_card(topic=topic)
+
+    def select_card(self, topic):
+        def card_text(card, backref=False):
+            content = textwrap.shorten(card.text_en, width=40, placeholder="…")
+            if not backref:
+                return content
+            return f"[Backref from {card.topic.title_en}] {content}"
+
+        return inquirer.list_input(
+            message="",
+            choices=[(card_text(card), card) for card in topic.cards.all()]
+            + [(card_text(card, backref=True), card) for card in topic.backrefs.all()],
+        )
 
     def edit_card(self, topic=None):
         if not topic:
             topic = self.get_topic()
+        card = self.select_card(topic)
+        SEPARATOR = "-+--+-\n"
+        card.text_en, card.text_de = inquirer.editor(
+            "", default=f"{card.text_en}\n\n{SEPARATOR}\n\n{card.text_de}"
+        ).split(SEPARATOR)
+        card.text_en = card.text_en.strip()
+        card.text_de = card.text_de.strip()
+        card.save()
+        card.update_references()
+        action = inquirer.list_input(
+            message="What do you want to do?",
+            choices=[
+                ("Edit another card on this topic", "edit_card"),
+                ("Continue", None),
+            ],
+            carousel=True,
+        )
+        if not action:
+            return card
+        return self.edit_card(topic=topic)
 
     def show_topic(self):
         topic = self.get_topic()
