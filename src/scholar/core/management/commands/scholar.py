@@ -73,6 +73,22 @@ class Command(BaseCommand):
         print("Backrefs:")
         for card in topic.backrefs.all():
             self.print_card(card, with_topic=True)
+        action = inquirer.list_input(
+            message="What do you want to do?",
+            choices=[
+                ("Delete topic", "delete_topic"),
+                ("Edit topic", "edit_topic"),
+                ("Continue", None),
+            ],
+            carousel=True,
+        )
+        if not action:
+            return topic
+        if action == "delete_topic":
+            backrefs = topic.backrefs.all()
+            topic.delete()
+            for card in backrefs:
+                card.update_references()
 
     def print_card(self, card, width=70, buffer=6, with_topic=False):
         def line(text_left, text_right, align="left"):
