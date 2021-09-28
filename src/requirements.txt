@@ -2,6 +2,7 @@ django==3.2.*
 django-cors-headers==3.8.*
 django-ordered-model==3.4.*
 django-rest-framework==3.12.*
+inquirer==2.7.*
 
 black
 djhtml
